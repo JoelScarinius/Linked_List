@@ -19,12 +19,16 @@ static void validName(int *j, int flag, char *name);
 static Node* searchDirectory(char phoneNum[NAME_NUM_LEN], int *flag);
 
 Node* displayRecord(int flag) {
+    unsigned int i = 0;
+    char phoneNum[NAME_NUM_LEN];
+    char name[NAME_NUM_LEN];
+    // LOOPA DETTA OM USERN SKRIVER FEL.
     if(flag == 1) {
-
+        validPhoneNum(&i, flag, phoneNum);
     }
     else
     {
-        /* code */
+        validName(&i, flag, name);
     }
     
 }
@@ -71,7 +75,7 @@ void validPhoneNum(int *i, int flag, char *phoneNum) { // Checks if format of th
         puts("Enter a phone number containing only digits:");
         fflush(stdin);
         fgets(phoneNum, NAME_NUM_LEN, stdin);
-        phoneNum[strlen(phoneNum)-1] = '\0'; // Removes '\n' character that was added by fgets.
+        if (strlen(phoneNum) > 1) phoneNum[strlen(phoneNum)-1] = '\0'; // Removes '\n' character that was added by fgets.
     }
     flag = isdigit(phoneNum[*i]); // flag = 0 means entered phone number doesn't only contain digits as required to be valid.
     *i+=1;
@@ -86,7 +90,7 @@ static void validName(int *j, int flag, char *name) { // Checks if format of the
         puts("Enter a name containing only letters from the english alphabet:");
         fflush(stdin);
         fgets(name, NAME_NUM_LEN, stdin);
-        name[strlen(name)-1] = '\0'; // Removes '\n' character that was added by fgets.
+        if (strlen(name) > 1) name[strlen(name)-1] = '\0'; // Removes '\n' character that was added by fgets.
     }
     flag = isalpha(name[*j]); // flag = 0 means entered name doesn't only contain letters in the english alphabet as required to be valid.
     *j+=1;

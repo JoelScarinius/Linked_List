@@ -33,7 +33,7 @@ void main() {
                     : puts("Insertion failed, record already exists!");
                     break;
             case 4: // FUNKAR NÄSTAN KOLLA PÅ DETTA IGEN HADE VART GRYMT OM DET FUNKA HELT MEN BEHÖVS NOG EN DEBUGG.
-                    int i;
+                    unsigned int i = 0;
                     validPhoneNum(&i, flag, phoneNum);
                     (flag = deleteRecord(phoneNum) == 0) 
                     ? puts("Deletion was successful!")
@@ -48,22 +48,3 @@ void main() {
     fflush(stdin);
     getchar();
 }
-
-
-// static char phoneNum[NAME_NUM_LEN] validPhoneNum() { 
-//     unsigned int i = 0;
-//                     do {
-//                         if (i == 0) {
-//                             puts("Please enter phone number belonging to the record you want to delete: ");
-//                             fflush(stdin);
-//                             fgets(phoneNum, NAME_NUM_LEN, stdin);
-//                             phoneNum[strlen(phoneNum)-1] = '\0'; // Removes '\n' character that was added by fgets.
-//                         }
-//                         flag = isdigit(phoneNum[i]);
-//                         i++;
-//                         if (flag == 0) {
-//                             puts("Invalid input, please try again!\n");
-//                             i = 0;
-//                         }
-//                     } while (phoneNum[i] != '\0');
-// }
