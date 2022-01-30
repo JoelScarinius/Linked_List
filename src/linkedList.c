@@ -6,40 +6,75 @@
 #include "linkedList.h"
 
 static Node *start = NULL; // Global start node used to keep track of the starting record in the directory.
-// This is a helper function to the function createRecord and it returns void.
-// The function controls that the user inputs a valid format when inputting the phone number to the record.
-// static void validPhoneNum(int *i, int flag, Node *newNode);
-// void validPhoneNum(int *i, int flag, char *phoneNum);
-// This is a helper function to the function createRecord and it returns void.
+// This is a helper function that is used in some other functions and it returns void.
 // The function controls that the user inputs a valid format when inputting the name to the record.
 static void validName(int *j, int flag, char *name);
 // This function searches the directory for the record with given phone number. 
 // The function returns the pointer to the previous record if found, NULL if the found record is the first one and flag is changed to 1.
 // The function also returns NULL if the directory is empty and flag is changed to 0.
-static Node* searchDirectory(char phoneNum[NAME_NUM_LEN], int *flag);
+static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag);
+static Node* searchByName(char name[NAME_NUM_LEN], int *flag);
+void printHeader();
 
 Node* displayRecord(int flag) {
-    unsigned int i = 0;
-    char phoneNum[NAME_NUM_LEN];
-    char name[NAME_NUM_LEN];
-    // LOOPA DETTA OM USERN SKRIVER FEL.
-    if(flag == 1) {
-        validPhoneNum(&i, flag, phoneNum);
+    // I could have only one of these variables and the functions would still work as wanted but I thought it was more readable like this.
+    Node *foundRecord = NULL;
+    char phoneNum[NAME_NUM_LEN]; 
+    char name[NAME_NUM_LEN]; 
+    for (unsigned int i = 0; phoneNum[i] != '\0' || name[i] != '\0'; ) {
+        if(flag == 1) {
+            validPhoneNum(&i, flag, phoneNum);
+            if ((foundRecord = searchByPhoneNum(phoneNum, &flag)) == NULL) return start;
+            else {
+                printHeader();
+                return foundRecord;
+            }
+        }
+        else {
+            validName(&i, flag, name);
+            if (searchByName(name, &flag) == NULL) return start;
+            else {
+                    printHeader();
+                    return foundRecord;
+                }
+        }
     }
-    else
-    {
-        validName(&i, flag, name);
+}
+
+static Node* searchByName(char name[NAME_NUM_LEN], int *flag) {
+    Node *ptr = start, *prePtr = ptr;
+    int i;
+    if (ptr != NULL) {
+        if ((i = strcmp(ptr->phoneNum, name)) == 0 && ptr->recordNum == 1) {
+            *flag = 1;
+            return prePtr = NULL;
+        }
     }
-    
+    while (ptr != NULL) {
+        if ((i = strcmp(ptr->phoneNum, name)) == 0) {
+            *flag = 1;
+            return prePtr;
+        }
+        prePtr = ptr;
+        ptr = ptr->next;
+    }
+    return ptr;
 }
 
 void displayDirectory() { // Displays all records in the directory.
     Node *ptr = start;
+    if (ptr != NULL) printHeader();
     while(ptr != NULL) { // Prints all the records in the directory to the screen.
-        printf("\n%1d%15s%15s", ptr->recordNum, ptr->phoneNum, ptr->name);
+        printf("\n%15d%15s%15s", ptr->recordNum, ptr->phoneNum, ptr->name);
         ptr = ptr->next;
     }
     if (start == NULL) puts("Directory is empty!");
+}
+
+void printHeader() {
+    puts("--------------------------------------------------");
+    printf("%15s%15s%15s\n", "Record number#", "Phone number", "Name");
+    puts("--------------------------------------------------");
 }
 
 Node* createRecord() { // Creates a record containg phone number, name and ordinal number.
@@ -56,20 +91,6 @@ Node* createRecord() { // Creates a record containg phone number, name and ordin
     return newNode;
 }
 
-// static void validPhoneNum(int *i, int flag, Node *newNode) { // Checks if format of the string entered is valid.
-//     if (*i == 0) {
-//         puts("Enter a phone number containing only digits:");
-//         fflush(stdin);
-//         fgets(newNode->phoneNum, NAME_NUM_LEN, stdin);
-//         newNode->phoneNum[strlen(newNode->phoneNum)-1] = '\0'; // Removes '\n' character that was added by fgets.
-//     }
-//     flag = isdigit(newNode->phoneNum[*i]); // flag = 0 means entered phone number doesn't only contain digits as required to be valid.
-//     *i+=1;
-//     if (flag == 0) {
-//         puts("Invalid input, please try again!\n");
-//         *i = 0;
-//     }
-// }
 void validPhoneNum(int *i, int flag, char *phoneNum) { // Checks if format of the string entered is valid.
     if (*i == 0) {
         puts("Enter a phone number containing only digits:");
@@ -102,7 +123,7 @@ static void validName(int *j, int flag, char *name) { // Checks if format of the
 
 int insertRecordBeg(Node *newNode) { // Inserts new record at the beginning of the directory.
     int flag = 0;
-    Node *ptr = searchDirectory(newNode->phoneNum, &flag); // Searches the directory for record with given phone number. 
+    Node *ptr = searchByPhoneNum(newNode->phoneNum, &flag); // Searches the directory for record with given phone number. 
     if (flag == 1) return flag = -1; // If phone number already is in the directory insertion fails and flag is returned.
     if(start==NULL) { // If the directory is empty newNode becomes the start node and next node is NULL.
         newNode->next = NULL;
@@ -125,7 +146,7 @@ int insertRecordBeg(Node *newNode) { // Inserts new record at the beginning of t
 
 int deleteRecord(char phoneNum[NAME_NUM_LEN]) {
     int flag = 0;
-    Node *prePtr = searchDirectory(phoneNum, &flag); 
+    Node *prePtr = searchByPhoneNum(phoneNum, &flag); 
     Node *ptr = start;
     if (flag == 0) return flag = -1;
     else if (prePtr == NULL) {
@@ -150,7 +171,7 @@ int deleteRecord(char phoneNum[NAME_NUM_LEN]) {
     return flag = 0;
 }
 
-static Node* searchDirectory(char phoneNum[NAME_NUM_LEN], int *flag) {
+static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag) {
     Node *ptr = start, *prePtr = ptr;
     int i;
     if (ptr != NULL) {
@@ -169,6 +190,3 @@ static Node* searchDirectory(char phoneNum[NAME_NUM_LEN], int *flag) {
     }
     return ptr;
 }
-Node* searchByNameOrNum(int flag) { 
-   
-}    

@@ -10,6 +10,8 @@ typedef struct Node {
     int recordNum;
 } Node;
 
+// This is a helper function that is used in some other functions and it returns void.
+// The function controls that the user inputs a valid format when inputting the phone number to the record.
 void validPhoneNum(int *i, int flag, char *phoneNum);
 Node* displayRecord(int flag);
 void displayDirectory();
