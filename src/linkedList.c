@@ -14,7 +14,6 @@ static void validName(int *j, int flag, char *name);
 // The function also returns NULL if the directory is empty and flag is changed to 0.
 static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag);
 static Node* searchByName(char name[NAME_NUM_LEN], int *flag);
-void printHeader();
 
 Node* displayRecord(int flag) {
     // I could have only one of these variables and the functions would still work as wanted but I thought it was more readable like this.
@@ -24,19 +23,15 @@ Node* displayRecord(int flag) {
     for (unsigned int i = 0; phoneNum[i] != '\0' || name[i] != '\0'; ) {
         if(flag == 1) {
             validPhoneNum(&i, flag, phoneNum);
-            if ((foundRecord = searchByPhoneNum(phoneNum, &flag)) == NULL) return start;
-            else {
-                printHeader();
-                return foundRecord;
-            }
+            if ((foundRecord = searchByPhoneNum(phoneNum, &flag)) == NULL && foundRecord == start) return NULL;
+            else if (foundRecord == NULL && strcmp(start->phoneNum, phoneNum)) return NULL;
+            return (foundRecord == NULL) ? start : foundRecord->next;
         }
         else {
             validName(&i, flag, name);
-            if (searchByName(name, &flag) == NULL) return start;
-            else {
-                    printHeader();
-                    return foundRecord;
-                }
+            if ((foundRecord = searchByName(name, &flag)) == NULL && foundRecord == start) return NULL;
+            else if (foundRecord == NULL && strcmp(start->name, name)) return NULL;
+            return (foundRecord == NULL) ? start : foundRecord->next;
         }
     }
 }
@@ -45,13 +40,13 @@ static Node* searchByName(char name[NAME_NUM_LEN], int *flag) {
     Node *ptr = start, *prePtr = ptr;
     int i;
     if (ptr != NULL) {
-        if ((i = strcmp(ptr->phoneNum, name)) == 0 && ptr->recordNum == 1) {
+        if ((i = strcmp(ptr->name, name)) == 0 && ptr->ordinalNum == 1) {
             *flag = 1;
             return prePtr = NULL;
         }
     }
     while (ptr != NULL) {
-        if ((i = strcmp(ptr->phoneNum, name)) == 0) {
+        if ((i = strcmp(ptr->name, name)) == 0) {
             *flag = 1;
             return prePtr;
         }
@@ -65,16 +60,16 @@ void displayDirectory() { // Displays all records in the directory.
     Node *ptr = start;
     if (ptr != NULL) printHeader();
     while(ptr != NULL) { // Prints all the records in the directory to the screen.
-        printf("\n%15d%15s%15s", ptr->recordNum, ptr->phoneNum, ptr->name);
+        printf("\n%-20d%-20s%-20s", ptr->ordinalNum, ptr->phoneNum, ptr->name);
         ptr = ptr->next;
     }
     if (start == NULL) puts("Directory is empty!");
 }
 
 void printHeader() {
-    puts("--------------------------------------------------");
-    printf("%15s%15s%15s\n", "Record number#", "Phone number", "Name");
-    puts("--------------------------------------------------");
+    puts("\n-----------------------------------------------------");
+    printf("%-20s%-20s%-20s\n", "Ordinal number#", "Phone number#", "Name:");
+    puts("-----------------------------------------------------");
 }
 
 Node* createRecord() { // Creates a record containg phone number, name and ordinal number.
@@ -87,7 +82,7 @@ Node* createRecord() { // Creates a record containg phone number, name and ordin
         if (j == 0 && newNode->phoneNum[i] != '\0') validPhoneNum(&i, flag, newNode->phoneNum); // Checks if format of the string entered is valid.
         else validName(&j, flag, newNode->name); // Checks if format of the string entered is valid.
     }
-    newNode->recordNum = 1; // New records will always be inserted as the first record in directory therefore recordNum = 1.
+    newNode->ordinalNum = 1; // New records will always be inserted as the first record in directory therefore ordinalNum = 1.
     return newNode;
 }
 
@@ -119,6 +114,7 @@ static void validName(int *j, int flag, char *name) { // Checks if format of the
         puts("Invalid input, please try again!\n");
         *j = 0;
     }
+    else toupper(name[*j]);
 }
 
 int insertRecordBeg(Node *newNode) { // Inserts new record at the beginning of the directory.
@@ -134,11 +130,11 @@ int insertRecordBeg(Node *newNode) { // Inserts new record at the beginning of t
         newNode->next = start;
         ptr = start;
         start = newNode;
-        while (ptr->next != NULL) { // All nodes succeding newNode have their recordNum incremented by 1.
-            ptr->recordNum += 1;
+        while (ptr->next != NULL) { // All nodes succeding newNode have their ordinalNum incremented by 1.
+            ptr->ordinalNum += 1;
             ptr = ptr->next;
         }
-        if (ptr->next == NULL) ptr->recordNum += 1; // Needed this if statement to make sure the last node in the directory is incremented by 1.
+        if (ptr->next == NULL) ptr->ordinalNum += 1; // Needed this if statement to make sure the last node in the directory is incremented by 1.
         return flag = 0; // Successful insertion flag = 0 is returned.
     }
 }
@@ -155,17 +151,17 @@ int deleteRecord(char phoneNum[NAME_NUM_LEN]) {
         ptr = start;
         if (ptr == NULL) return flag = 0;
         while (ptr->next != NULL) {
-            ptr->recordNum -= 1;
+            ptr->ordinalNum -= 1;
             ptr = ptr->next;
         }
-        if (ptr->next == NULL) ptr->recordNum -= 1;
+        if (ptr->next == NULL) ptr->ordinalNum -= 1;
     }
     else if ((flag = strcmp((ptr = prePtr->next)->phoneNum, phoneNum))== 0) {
         prePtr->next = ptr->next;
         free(ptr);
         while (prePtr->next != NULL) {
             prePtr = prePtr->next;
-            prePtr->recordNum -= 1;
+            prePtr->ordinalNum -= 1;
         }
     }
     return flag = 0;
@@ -175,7 +171,7 @@ static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag) {
     Node *ptr = start, *prePtr = ptr;
     int i;
     if (ptr != NULL) {
-        if ((i = strcmp(ptr->phoneNum, phoneNum)) == 0 && ptr->recordNum == 1) {
+        if ((i = strcmp(ptr->phoneNum, phoneNum)) == 0 && ptr->ordinalNum == 1) {
             *flag = 1;
             return prePtr = NULL;
         }

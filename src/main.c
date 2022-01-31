@@ -1,22 +1,32 @@
 #include <stdio.h>
 #include "linkedList.h"
 
-    static unsigned int option;
+    static unsigned int option = 0;
     static unsigned int flag;
     static char phoneNum[NAME_NUM_LEN];
+
+    static void printWelcomeMessage();
     static void displayMainMenu();
     static unsigned int validInput();
 
 void main() {
+    printWelcomeMessage();
     do {
+        if (option != 0) puts("Press any key to display the main menu!");
+        fflush(stdin);
+        getchar();
         displayMainMenu();
         printf("\nYour choice?: ");
         fflush(stdin);
         scanf("%d", &option);
         switch(option) {
         case 1: Node *foundRecord = displayRecord(validInput());
-                (foundRecord == NULL) ? puts("Record doesn't exists!")
-                : printf("\n%1d%15s%15s", foundRecord->recordNum, foundRecord->phoneNum, foundRecord->name);
+                if (foundRecord == NULL) puts("Record doesn't exists!");
+                else {
+                    printHeader();
+                    printf("\n%-20d%-20s%-20s", foundRecord->ordinalNum, foundRecord->phoneNum, foundRecord->name);
+                }
+                break;
         case 2: displayDirectory(); break;
         case 3: (flag = insertRecordBeg(createRecord()) == 0) 
                 ? puts("Insertion was successful!") 
@@ -32,8 +42,13 @@ void main() {
         default: puts("Invalid option, please choose a valid option!"); break;
         }
     } while (option != 0);
-    fflush(stdin);
-    getchar();
+}
+
+static void printWelcomeMessage() {
+    puts("**************************************************************************************************\n"
+        "Welcome!\nThis is a program that uses a linkedlist to create a directory of phone numbers and names.\n"
+        "Press enter to display the main menu to see what options you have.\n"
+        "**************************************************************************************************");
 }
 
 static void displayMainMenu() {
