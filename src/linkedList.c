@@ -6,6 +6,9 @@
 #include "linkedList.h"
 
 static Node *start = NULL; // Global start node used to keep track of the starting record in the directory.
+static bool trueOrFalse;
+
+static bool emptyDirectory();
 // This is a helper function that is used in some other functions and it returns void.
 // The function controls that the user inputs a valid format when inputting the name to the record.
 static void validName(int *j, int flag, char *name);
@@ -16,6 +19,7 @@ static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag);
 static Node* searchByName(char name[NAME_NUM_LEN], int *flag);
 
 Node* displayRecord(int flag) {
+    if (trueOrFalse = emptyDirectory()) return NULL;
     // I could have only one of these variables and the functions would still work as wanted but I thought it was more readable like this.
     Node *foundRecord = NULL;
     char phoneNum[NAME_NUM_LEN]; 
@@ -23,14 +27,14 @@ Node* displayRecord(int flag) {
     for (unsigned int i = 0; phoneNum[i] != '\0' || name[i] != '\0'; ) {
         if(flag == 1) {
             validPhoneNum(&i, flag, phoneNum);
-            if ((foundRecord = searchByPhoneNum(phoneNum, &flag)) == NULL && foundRecord == start) return NULL;
-            else if (foundRecord == NULL && strcmp(start->phoneNum, phoneNum)) return NULL;
+            // if ((foundRecord = searchByPhoneNum(phoneNum, &flag)) == NULL && foundRecord == start) return NULL;
+            if (foundRecord == NULL && strcmp(start->phoneNum, phoneNum)) return NULL;
             return (foundRecord == NULL) ? start : foundRecord->next;
         }
         else {
             validName(&i, flag, name);
-            if ((foundRecord = searchByName(name, &flag)) == NULL && foundRecord == start) return NULL;
-            else if (foundRecord == NULL && strcmp(start->name, name)) return NULL;
+            // if ((foundRecord = searchByName(name, &flag)) == NULL && foundRecord == start) return NULL;
+            if (foundRecord == NULL && strcmp(start->name, name)) return NULL;
             return (foundRecord == NULL) ? start : foundRecord->next;
         }
     }
@@ -57,13 +61,13 @@ static Node* searchByName(char name[NAME_NUM_LEN], int *flag) {
 }
 
 void displayDirectory() { // Displays all records in the directory.
+    if(emptyDirectory()) puts("Directory is empty!");
     Node *ptr = start;
     if (ptr != NULL) printHeader();
     while(ptr != NULL) { // Prints all the records in the directory to the screen.
         printf("\n%-20d%-20s%-20s", ptr->ordinalNum, ptr->phoneNum, ptr->name);
         ptr = ptr->next;
     }
-    if (start == NULL) puts("Directory is empty!");
 }
 
 void printHeader() {
@@ -114,7 +118,6 @@ static void validName(int *j, int flag, char *name) { // Checks if format of the
         puts("Invalid input, please try again!\n");
         *j = 0;
     }
-    else toupper(name[*j]);
 }
 
 int insertRecordBeg(Node *newNode) { // Inserts new record at the beginning of the directory.
@@ -142,9 +145,10 @@ int insertRecordBeg(Node *newNode) { // Inserts new record at the beginning of t
 
 int deleteRecord(char phoneNum[NAME_NUM_LEN]) {
     int flag = 0;
+    if (trueOrFalse = emptyDirectory()) return flag = 1; // PRINTA UNDERFLOW?? KANSKE ONÖDING I DENNA FUNKTION? MEN GÖR PROGRAMMET MYCKET SNABBARE
     Node *prePtr = searchByPhoneNum(phoneNum, &flag); 
     Node *ptr = start;
-    if (flag == 0) return flag = -1;
+    if (flag == 0) return flag = -1; // Behövs hjälper till när directory inte är tom men usern har skrivit ett nummer som inte finns.
     else if (prePtr == NULL) {
         start = ptr->next;
         free(ptr);
@@ -185,4 +189,8 @@ static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag) {
         ptr = ptr->next;
     }
     return ptr;
+}
+
+static bool emptyDirectory() {
+    return (start == NULL) ? true : false;
 }

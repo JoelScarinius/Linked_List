@@ -12,9 +12,9 @@
 void main() {
     printWelcomeMessage();
     do {
-        if (option != 0) puts("Press any key to display the main menu!");
-        fflush(stdin);
-        getchar();
+        // if (option != 0) puts("\nPress any key to display the main menu!");
+        // fflush(stdin);
+        // getchar();
         displayMainMenu();
         printf("\nYour choice?: ");
         fflush(stdin);
@@ -34,9 +34,8 @@ void main() {
                 break;
         case 4: unsigned int i = 0;
                 validPhoneNum(&i, flag, phoneNum);
-                (flag = deleteRecord(phoneNum) == 0) 
-                ? puts("Deletion was successful!")
-                : puts("Deletion failed, record doesn't exists!"); 
+                (flag = deleteRecord(phoneNum) == 0) ? puts("Deletion was successful!")
+                : (flag == 1) ? puts("Directory is empty!") : puts("Deletion failed, record doesn't exists!"); 
                 break;
         case 0: puts("Have a good one!"); break;
         default: puts("Invalid option, please choose a valid option!"); break;
@@ -45,10 +44,10 @@ void main() {
 }
 
 static void printWelcomeMessage() {
-    puts("**************************************************************************************************\n"
+    puts("*******************************************************************************************\n"
         "Welcome!\nThis is a program that uses a linkedlist to create a directory of phone numbers and names.\n"
-        "Press enter to display the main menu to see what options you have.\n"
-        "**************************************************************************************************");
+        "Down below the main menu is diplayed where you can see which options you have.\n"
+        "*******************************************************************************************");
 }
 
 static void displayMainMenu() {
