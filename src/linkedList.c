@@ -15,53 +15,32 @@ static void validName(int *j, int flag, char *name);
 // This function searches the directory for the record with given phone number. 
 // The function returns the pointer to the previous record if found, NULL if the found record is the first one and flag is changed to 1.
 // The function also returns NULL if the directory is empty and flag is changed to 0.
-static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag);
-static Node* searchByName(char name[NAME_NUM_LEN], int *flag);
+static Node* searchDirectory(char nameOrPhoneNum[NAME_NUM_LEN], int *flag);
+// static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag);
+// static Node* searchByName(char name[NAME_NUM_LEN], int *flag);
 
-Node* displayRecord(int flag) {
+Node* displayRecord(int *flag, char nameOrPhoneNum[NAME_NUM_LEN]) {
     if (trueOrFalse = emptyDirectory()) return NULL;
-    // I could have only one of these variables and the functions would still work as wanted but I thought it was more readable like this.
     Node *foundRecord = NULL;
-    char phoneNum[NAME_NUM_LEN]; 
-    char name[NAME_NUM_LEN]; 
-    for (unsigned int i = 0; phoneNum[i] != '\0' || name[i] != '\0'; ) {
-        if(flag == 1) {
-            validPhoneNum(&i, flag, phoneNum);
-            // if ((foundRecord = searchByPhoneNum(phoneNum, &flag)) == NULL && foundRecord == start) return NULL;
-            if (foundRecord == NULL && strcmp(start->phoneNum, phoneNum)) return NULL;
-            return (foundRecord == NULL) ? start : foundRecord->next;
+
+    for (unsigned int i = 0; nameOrPhoneNum[i] != '\0' || i == 0; ) {
+        if(*flag == 1) {
+            validPhoneNum(&i, *flag, nameOrPhoneNum);
+            if ((foundRecord = searchDirectory(nameOrPhoneNum, flag)) == NULL && foundRecord == start) return NULL;
+            if (foundRecord == NULL && strcmp(start->phoneNum, nameOrPhoneNum)) return NULL;
+            return foundRecord->next;
         }
         else {
-            validName(&i, flag, name);
-            // if ((foundRecord = searchByName(name, &flag)) == NULL && foundRecord == start) return NULL;
-            if (foundRecord == NULL && strcmp(start->name, name)) return NULL;
-            return (foundRecord == NULL) ? start : foundRecord->next;
+            validName(&i, *flag, nameOrPhoneNum);
+            if ((foundRecord = searchDirectory(nameOrPhoneNum, flag)) == NULL && foundRecord == start) return NULL;
+            if (foundRecord == NULL && strcmp(start->name, nameOrPhoneNum)) return NULL;
+            return foundRecord->next;
         }
-    }
-}
-
-static Node* searchByName(char name[NAME_NUM_LEN], int *flag) {
-    Node *ptr = start, *prePtr = ptr;
-    int i;
-    if (ptr != NULL) {
-        if ((i = strcmp(ptr->name, name)) == 0 && ptr->ordinalNum == 1) {
-            *flag = 1;
-            return prePtr = NULL;
-        }
-    }
-    while (ptr != NULL) {
-        if ((i = strcmp(ptr->name, name)) == 0) {
-            *flag = 1;
-            return prePtr;
-        }
-        prePtr = ptr;
-        ptr = ptr->next;
-    }
-    return ptr;
+    } 
 }
 
 void displayDirectory() { // Displays all records in the directory.
-    if(emptyDirectory()) puts("Directory is empty!");
+    if (emptyDirectory()) puts("Directory is empty!");
     Node *ptr = start;
     if (ptr != NULL) printHeader();
     while(ptr != NULL) { // Prints all the records in the directory to the screen.
@@ -122,7 +101,7 @@ static void validName(int *j, int flag, char *name) { // Checks if format of the
 
 int insertRecordBeg(Node *newNode) { // Inserts new record at the beginning of the directory.
     int flag = 0;
-    Node *ptr = searchByPhoneNum(newNode->phoneNum, &flag); // Searches the directory for record with given phone number. 
+    Node *ptr = searchDirectory(newNode->phoneNum, &flag); // Searches the directory for record with given phone number. 
     if (flag == 1) return flag = -1; // If phone number already is in the directory insertion fails and flag is returned.
     if(start==NULL) { // If the directory is empty newNode becomes the start node and next node is NULL.
         newNode->next = NULL;
@@ -142,11 +121,10 @@ int insertRecordBeg(Node *newNode) { // Inserts new record at the beginning of t
     }
 }
 
-
 int deleteRecord(char phoneNum[NAME_NUM_LEN]) {
     int flag = 0;
     if (trueOrFalse = emptyDirectory()) return flag = 1; // PRINTA UNDERFLOW?? KANSKE ONÖDING I DENNA FUNKTION? MEN GÖR PROGRAMMET MYCKET SNABBARE
-    Node *prePtr = searchByPhoneNum(phoneNum, &flag); 
+    Node *prePtr = searchDirectory(phoneNum, &flag); 
     Node *ptr = start;
     if (flag == 0) return flag = -1; // Behövs hjälper till när directory inte är tom men usern har skrivit ett nummer som inte finns.
     else if (prePtr == NULL) {
@@ -171,17 +149,17 @@ int deleteRecord(char phoneNum[NAME_NUM_LEN]) {
     return flag = 0;
 }
 
-static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag) {
-    Node *ptr = start, *prePtr = ptr;
+static Node* searchDirectory(char nameOrPhoneNum[NAME_NUM_LEN], int *flag) {
+      Node *ptr = start, *prePtr = ptr;
     int i;
     if (ptr != NULL) {
-        if ((i = strcmp(ptr->phoneNum, phoneNum)) == 0 && ptr->ordinalNum == 1) {
+        if ((i = strcmp(ptr->phoneNum, nameOrPhoneNum)) == 0 || (i = strcmp(ptr->name, nameOrPhoneNum)) == 0 && ptr->ordinalNum == 1) {
             *flag = 1;
             return prePtr = NULL;
         }
     }
     while (ptr != NULL) {
-        if ((i = strcmp(ptr->phoneNum, phoneNum)) == 0) {
+        if ((i = strcmp(ptr->phoneNum, nameOrPhoneNum)) == 0 || (i = strcmp(ptr->name, nameOrPhoneNum)) == 0) {
             *flag = 1;
             return prePtr;
         }
