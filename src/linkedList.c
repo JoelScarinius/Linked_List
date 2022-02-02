@@ -9,34 +9,22 @@ static Node *start = NULL; // Global start node used to keep track of the starti
 static bool trueOrFalse;
 
 static bool emptyDirectory();
-// This is a helper function that is used in some other functions and it returns void.
-// The function controls that the user inputs a valid format when inputting the name to the record.
-static void validName(int *j, int flag, char *name);
-// This function searches the directory for the record with given phone number. 
+// This function searches the directory for the record with given phone number or name. 
 // The function returns the pointer to the previous record if found, NULL if the found record is the first one and flag is changed to 1.
 // The function also returns NULL if the directory is empty and flag is changed to 0.
 static Node* searchDirectory(char nameOrPhoneNum[NAME_NUM_LEN], int *flag);
-// static Node* searchByPhoneNum(char phoneNum[NAME_NUM_LEN], int *flag);
-// static Node* searchByName(char name[NAME_NUM_LEN], int *flag);
-
 Node* displayRecord(int *flag, char nameOrPhoneNum[NAME_NUM_LEN]) {
     if (trueOrFalse = emptyDirectory()) return NULL;
     Node *foundRecord = NULL;
-
-    for (unsigned int i = 0; nameOrPhoneNum[i] != '\0' || i == 0; ) {
-        if(*flag == 1) {
-            validPhoneNum(&i, *flag, nameOrPhoneNum);
-            if ((foundRecord = searchDirectory(nameOrPhoneNum, flag)) == NULL && foundRecord == start) return NULL;
-            if (foundRecord == NULL && strcmp(start->phoneNum, nameOrPhoneNum)) return NULL;
-            return foundRecord->next;
-        }
-        else {
-            validName(&i, *flag, nameOrPhoneNum);
-            if ((foundRecord = searchDirectory(nameOrPhoneNum, flag)) == NULL && foundRecord == start) return NULL;
-            if (foundRecord == NULL && strcmp(start->name, nameOrPhoneNum)) return NULL;
-            return foundRecord->next;
-        }
-    } 
+    
+    if ((foundRecord = searchDirectory(nameOrPhoneNum, flag)) == NULL) {
+        if ((strcmp(start->name, nameOrPhoneNum)) != 0 && (strcmp(start->phoneNum, nameOrPhoneNum)) != 0) return NULL;
+        else return start;
+    }
+    if (foundRecord != NULL){
+        if ((strcmp((foundRecord->next)->name, nameOrPhoneNum)) != 0 && (strcmp((foundRecord->next)->phoneNum, nameOrPhoneNum)) != 0) return NULL;
+        else return foundRecord->next;
+    }
 }
 
 void displayDirectory() { // Displays all records in the directory.
@@ -84,7 +72,7 @@ void validPhoneNum(int *i, int flag, char *phoneNum) { // Checks if format of th
     }
 }
 
-static void validName(int *j, int flag, char *name) { // Checks if format of the string entered is valid.
+void validName(int *j, int flag, char *name) { // Checks if format of the string entered is valid.
     if (*j == 0) {
         puts("Enter a name containing only letters from the english alphabet:");
         fflush(stdin);
@@ -150,16 +138,15 @@ int deleteRecord(char phoneNum[NAME_NUM_LEN]) {
 }
 
 static Node* searchDirectory(char nameOrPhoneNum[NAME_NUM_LEN], int *flag) {
-      Node *ptr = start, *prePtr = ptr;
-    int i;
+    Node *ptr = start, *prePtr = ptr;
     if (ptr != NULL) {
-        if ((i = strcmp(ptr->phoneNum, nameOrPhoneNum)) == 0 || (i = strcmp(ptr->name, nameOrPhoneNum)) == 0 && ptr->ordinalNum == 1) {
+        if ((strcmp(ptr->phoneNum, nameOrPhoneNum)) == 0 || (strcmp(ptr->name, nameOrPhoneNum)) == 0 && ptr->ordinalNum == 1) {
             *flag = 1;
             return prePtr = NULL;
         }
     }
     while (ptr != NULL) {
-        if ((i = strcmp(ptr->phoneNum, nameOrPhoneNum)) == 0 || (i = strcmp(ptr->name, nameOrPhoneNum)) == 0) {
+        if ((strcmp(ptr->phoneNum, nameOrPhoneNum)) == 0 || (strcmp(ptr->name, nameOrPhoneNum)) == 0) {
             *flag = 1;
             return prePtr;
         }

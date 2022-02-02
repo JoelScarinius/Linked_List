@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "linkedList.h"
 
     static unsigned int option = 0;
@@ -18,6 +19,10 @@ void main() {
         scanf("%d", &option);
         switch(option) {
         case 1: validInput(&flag);
+                for (unsigned int i = 0; nameOrPhoneNum[i] != '\0' || i == 0; ) {
+                    if(flag == 1) validPhoneNum(&i, flag, nameOrPhoneNum);
+                    else validName(&i, flag, nameOrPhoneNum);
+                } 
                 Node *foundRecord = displayRecord(&flag, nameOrPhoneNum);
                 if (foundRecord == NULL) puts("Record doesn't exists or directory is empty!");
                 else {
