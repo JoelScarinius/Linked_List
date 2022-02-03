@@ -6,29 +6,30 @@
 #include "linkedList.h"
 
 static Node *start = NULL; // Global start node used to keep track of the starting record in the directory.
-static bool trueOrFalse;
 
-static bool emptyDirectory();
 // This function searches the directory for the record with given phone number or name. 
 // The function returns the pointer to the previous record if found, NULL if the found record is the first one and flag is changed to 1.
 // The function also returns NULL if the directory is empty and flag is changed to 0.
 static Node* searchDirectory(char nameOrPhoneNum[NAME_NUM_LEN], int *flag);
+// This function returns true or false depending on if the directory is empty or not.
+static bool emptyDirectory();
+
 Node* displayRecord(int *flag, char nameOrPhoneNum[NAME_NUM_LEN]) {
-    if (trueOrFalse = emptyDirectory()) return NULL;
-    Node *foundRecord = NULL;
-    
-    if ((foundRecord = searchDirectory(nameOrPhoneNum, flag)) == NULL) {
+    if (emptyDirectory()) return NULL; // If directory is empty return NULL.
+    Node *foundRecord = searchDirectory(nameOrPhoneNum, flag);
+    // If foundRecord is NULL and the first record in the directory is the record searched for return it else record doesn't exists return NULL.
+    if (foundRecord == NULL) { 
         if ((strcmp(start->name, nameOrPhoneNum)) != 0 && (strcmp(start->phoneNum, nameOrPhoneNum)) != 0) return NULL;
         else return start;
     }
-    if (foundRecord != NULL){
+    else { // Else if record doesn't exists return NULL else the record searched for is the next record in the list return that record.
         if ((strcmp((foundRecord->next)->name, nameOrPhoneNum)) != 0 && (strcmp((foundRecord->next)->phoneNum, nameOrPhoneNum)) != 0) return NULL;
         else return foundRecord->next;
     }
 }
 
 void displayDirectory() { // Displays all records in the directory.
-    if (emptyDirectory()) puts("Directory is empty!");
+    if (emptyDirectory()) puts("Directory is empty!"); // If directory is empty display that to the screen.
     Node *ptr = start;
     if (ptr != NULL) printHeader();
     while(ptr != NULL) { // Prints all the records in the directory to the screen.
@@ -37,7 +38,7 @@ void displayDirectory() { // Displays all records in the directory.
     }
 }
 
-void printHeader() {
+void printHeader() { // This function is a helper function that displays a describing header.
     puts("\n-----------------------------------------------------");
     printf("%-20s%-20s%-20s\n", "Ordinal number#", "Phone number#", "Name:");
     puts("-----------------------------------------------------");
@@ -109,43 +110,44 @@ int insertRecordBeg(Node *newNode) { // Inserts new record at the beginning of t
     }
 }
 
-int deleteRecord(char phoneNum[NAME_NUM_LEN]) {
+int deleteRecord(char phoneNum[NAME_NUM_LEN]) { // Deletes any record in the directory.
     int flag = 0;
-    if (trueOrFalse = emptyDirectory()) return flag = 1; // PRINTA UNDERFLOW?? KANSKE ONÖDING I DENNA FUNKTION? MEN GÖR PROGRAMMET MYCKET SNABBARE
-    Node *prePtr = searchDirectory(phoneNum, &flag); 
+    if (emptyDirectory()) return flag = 1; // If directory is empty return flag = 1.
+    Node *prePtr = searchDirectory(phoneNum, &flag); // Searches for phone number inputted by user.
     Node *ptr = start;
-    if (flag == 0) return flag = -1; // Behövs hjälper till när directory inte är tom men usern har skrivit ett nummer som inte finns.
-    else if (prePtr == NULL) {
-        start = ptr->next;
-        free(ptr);
-        ptr = start;
-        if (ptr == NULL) return flag = 0;
-        while (ptr->next != NULL) {
+    if (flag == 0) return flag = -1; // If flag == 0 record doesn't exists returns flag = -1.
+    else if (prePtr == NULL) { // If found record is the first record in the directory.
+        start = ptr->next; // Start becomes the record start points to.
+        free(ptr); // Frees the old start record.
+        ptr = start; // Set ptr to the new start record.
+        if (ptr == NULL) return flag = 0; // If directory now is empty retrun flag = 0 which means deletion was successful.
+        while (ptr->next != NULL) { // Else lower all following records ordinal number by one.
             ptr->ordinalNum -= 1;
             ptr = ptr->next;
         }
-        if (ptr->next == NULL) ptr->ordinalNum -= 1;
+        if (ptr->next == NULL) ptr->ordinalNum -= 1; // If only one record left in the directory.
     }
-    else if ((flag = strcmp((ptr = prePtr->next)->phoneNum, phoneNum))== 0) {
-        prePtr->next = ptr->next;
+    else if (strcmp((ptr = prePtr->next)->phoneNum, phoneNum) == 0) { // Sets ptr to the record pointed to by prePtr and comepare phone numbers.
+        prePtr->next = ptr->next; // prePtr->next is now set to point to the record after the record that user wants to delete.
         free(ptr);
-        while (prePtr->next != NULL) {
+        while (prePtr->next != NULL) { // Lowers all following records ordinal number by one.
             prePtr = prePtr->next;
             prePtr->ordinalNum -= 1;
         }
     }
-    return flag = 0;
+    return flag = 0; // Deletion was successful.
 }
-
+// Searches the directory for the record with given phone number or name.
 static Node* searchDirectory(char nameOrPhoneNum[NAME_NUM_LEN], int *flag) {
     Node *ptr = start, *prePtr = ptr;
-    if (ptr != NULL) {
+    if (ptr != NULL) { // If directory contains of only one element and is found set flag = 1 and return NULL.
         if ((strcmp(ptr->phoneNum, nameOrPhoneNum)) == 0 || (strcmp(ptr->name, nameOrPhoneNum)) == 0 && ptr->ordinalNum == 1) {
             *flag = 1;
             return prePtr = NULL;
         }
     }
-    while (ptr != NULL) {
+    // If the directory contains of more than one record and is found set flag = 1 and return the record previous to the record searched for.
+    while (ptr != NULL) { 
         if ((strcmp(ptr->phoneNum, nameOrPhoneNum)) == 0 || (strcmp(ptr->name, nameOrPhoneNum)) == 0) {
             *flag = 1;
             return prePtr;
@@ -153,9 +155,9 @@ static Node* searchDirectory(char nameOrPhoneNum[NAME_NUM_LEN], int *flag) {
         prePtr = ptr;
         ptr = ptr->next;
     }
-    return ptr;
+    return ptr; // Record wasn't found returns ptr that is NULL in this case.
 }
 
-static bool emptyDirectory() {
+static bool emptyDirectory() { // Returns true or false depending on if the directory is empty or not.
     return (start == NULL) ? true : false;
 }

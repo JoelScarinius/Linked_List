@@ -2,13 +2,14 @@
 #include <string.h>
 #include "linkedList.h"
 
-    static unsigned int option = 0;
-    static unsigned int flag = 2;
-    static char nameOrPhoneNum[NAME_NUM_LEN];
+// Option and flag is integer variables, option is used to represent what menu choice the user have chosen. 
+// Flag is assinged different values in different situations to tell the user if it was possible to do what they wanted to do.
+static unsigned int option = 0, flag; 
+static char nameOrPhoneNum[NAME_NUM_LEN];
 
-    static void printWelcomeMessage();
-    static void displayMainMenu();
-    static void validInput(int *flag);
+static void printWelcomeMessage(); // Prints a short welcome message.
+static void displayMainMenu(); // Displays the main menu.
+static void validInput(int *flag); // Makes sure user inputs a valid number 1 to search by phone number or 0 to search by name.
 
 void main() {
     printWelcomeMessage();
@@ -17,9 +18,9 @@ void main() {
         printf("\nYour choice?: ");
         fflush(stdin);
         scanf("%d", &option);
-        switch(option) {
+        switch(option) { // Control structure for all the different options the user have.
         case 1: validInput(&flag);
-                for (unsigned int i = 0; nameOrPhoneNum[i] != '\0' || i == 0; ) {
+                for (unsigned int i = 0; nameOrPhoneNum[i] != '\0' || i == 0;) {
                     if(flag == 1) validPhoneNum(&i, flag, nameOrPhoneNum);
                     else validName(&i, flag, nameOrPhoneNum);
                 } 
@@ -46,14 +47,14 @@ void main() {
     } while (option != 0);
 }
 
-static void printWelcomeMessage() {
+static void printWelcomeMessage() { // Prints a short welcome message.
     puts("******************************************************************************************\n"
         "Welcome!\nThis is a program that uses a linkedlist to create a directory of phone numbers and names.\n"
         "Down below the main menu is diplayed where you can see which options you have.\nPlease enjoy!\n"
         "******************************************************************************************");
 }
 
-static void displayMainMenu() {
+static void displayMainMenu() { // Displays the main menu.
     puts("\n\n***** MAIN MENU *****"
         "\n1: Display record"
         "\n2: Display directory"
@@ -62,7 +63,8 @@ static void displayMainMenu() {
         "\n0: Exit");
 }
 
-static void validInput(int *flag) {
+static void validInput(int *flag) { // Makes sure user inputs a valid number 1 to search by phone number or 0 to search by name.
+    *flag = 2;
     do {
         printf("\nEnter \"1\" to search by phone number or \"0\" to search by name: ");
         fflush(stdin);
